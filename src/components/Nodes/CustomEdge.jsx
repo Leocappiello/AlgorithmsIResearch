@@ -6,7 +6,7 @@ import {
 } from 'reactflow';
 import {useState, useEffect} from 'react';
 
-export default function CustomEdge({ id, sourceX, sourceY, targetX, targetY }) {
+export default function CustomEdge({ id, sourceX, sourceY, targetX, targetY, label }) {
     const { setEdges, getNodes, getEdges } = useReactFlow();
     const [hovered, setHovered] = useState(false);
     const [edgePath, labelX, labelY] = getStraightPath({
@@ -18,17 +18,16 @@ export default function CustomEdge({ id, sourceX, sourceY, targetX, targetY }) {
 
     const handleChangeInput = (e) => {
         /* const edges = getEdges(); */
-        setEdges((edges) => edges.map((elem) => elem.id === id ? {...elem, data: { value: e.target.value }} : elem))
-        
+        if (label) {
+            setEdges((edges) => edges.map((elem) => elem.id === id ? {...elem, data: { value: label.split('Weight: ')[1] }} : elem));
+        } else {
+            setEdges((edges) => edges.map((elem) => elem.id === id ? {...elem, data: { value: e.target.value }} : elem))
+        }
     }
 
     return (
     <>
         <BaseEdge id={id} path={edgePath} />
-        {/* {console.log(id)}
-        {console.log(getNodes())}
-        {console.log(getEdges())} */}
-        
         <EdgeLabelRenderer>
             <input placeholder="value"
                 onChange={handleChangeInput}

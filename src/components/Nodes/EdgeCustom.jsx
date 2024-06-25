@@ -14,20 +14,14 @@ export const EdgeCustom = React.memo((edgeInfo: EdgeProps) => {
       targetY: edgeInfo.targetY
     });
 
-    const handleClickEdge = (a) => {
-      console.log('clickea3', a);
-    }
-    console.log(`RENDER - edgeinfo`, edgeInfo);
     return (
       <div>
         <path
           className="react-flow__edge-path"
           data-edgeid={edgeInfo.id}
           style={{ ...DEFAULT_EDGE_STYLES }}
-          onClick={handleClickEdge}
           onMouseOver={(event) => {
             const edge = event.target as HTMLElement;
-            console.log(`[CustomEdge]`, edge);
             edge.style.filter = "drop-shadow( 0px 3px 5px rgba(0, 0, 0, .9))";
           }}
           onMouseLeave={(event) => {

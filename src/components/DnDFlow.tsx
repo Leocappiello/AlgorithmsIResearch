@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactFlow, {
+  addEdge,
   BackgroundVariant,
   Controls,
   ReactFlowProvider,
-  addEdge,
   useEdgesState,
   useNodesState
 } from 'reactflow';
@@ -14,68 +14,39 @@ import NodeCustom from './Nodes/NodeCustom.jsx';
 
 import Sidebar from './Sidebar';
 
-import calculateDijkstra from '../algorithm/Djikstra.ts';
+/* import calculateDijkstra from '../algorithm/Djikstra.ts'; */
 import EdgeAlgorithm from '../algorithm/Edge.class.js';
+import { fordFulkerson } from '../algorithm/FordFulkerson.class.ts';
+import Graph from '../algorithm/Graph.class.ts';
 import calculateKruskal from '../algorithm/Kruskal.class.ts';
 import calculatePrim from '../algorithm/Prim.class.js';
 import './index.css';
 
-const initialNodes = [];
-
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const options = [
-  {
-    algorithm: 'prim',
-  },
-  {
-    algorithm: 'kruskal',
-  },
-  {
-    algorithm: 'djikstra',
-  },
-]
+const initialNodes = [];
 
-const DnDFlow = () => {
-  const [selected, setSelected] = useState(0);
+
+const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelected, options, setFFResult}) => {
+  
   const nodeTypes = useMemo(() => ({
     nodeCustom: NodeCustom,
   }), []);
   const edgeTypes = useMemo(() => ({
     'customEdge': CustomEdge
   }), []);
-  console.log('selected', selected, options[selected].algorithm);
   
-  const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  const [djikstraStart, setDjikstraStart] = useState(0);
+  /* const [djikstraStart, setDjikstraStart] = useState(0); */
+
+  const [ff, setFf] = useState({
+    start: null,
+    end: null
+  })
   const [hasErrors, setHasErrors] = useState(false);
-
-  useEffect(() => {
-    const nodesAlgorithm = nodes.map((elem) => elem.id)
-    const edgesAlgorithm = edges.map((elem) => new EdgeAlgorithm(elem.source, elem.target, elem.data?.value ?? undefined))
-
-    try {
-      const weights = edgesAlgorithm.map(elem => elem.weight ?? 0);
-      if (weights.length && !weights.some(isNaN)) {
-        setHasErrors(false)
-        const resultPrim = calculatePrim(nodesAlgorithm, edgesAlgorithm)
-        const resultKruskal = calculateKruskal(nodesAlgorithm, edgesAlgorithm)
-        const resultDijkstra = calculateDijkstra(nodesAlgorithm, edgesAlgorithm, djikstraStart);
-        console.log(resultPrim)
-        console.log(resultKruskal);
-        console.log(resultDijkstra);
-      } else {
-        setHasErrors(true)
-        console.log('Hay edges sin definir');
-      }
-    } catch (error) {
-      setHasErrors(true)
-    }
-  }, [nodes, edges])
 
   const onConnect = useCallback((params) => {
       const edge = {...params, type: 'customEdge'};
@@ -122,6 +93,46 @@ const DnDFlow = () => {
     [nodes, reactFlowInstance],
   );
 
+  const onClickSolution = () => {
+    /* setSolution([]) */
+    const nodesAlgorithm = nodes.map((elem) => elem.id)
+    const edgesAlgorithm = edges.map((elem) => new EdgeAlgorithm(elem.source, elem.target, elem.data?.value ?? undefined))
+
+    try {
+      const weights = edgesAlgorithm.map(elem => elem.weight ?? 0);
+      if (weights.length && !weights.some(isNaN)) {
+        setHasErrors(false)
+        switch (options[selected].algorithm) {
+          case 'prim':
+            setSolution(calculatePrim(nodesAlgorithm, edgesAlgorithm));
+            break;
+
+          case 'kruskal':
+            setSolution(calculateKruskal(nodesAlgorithm, edgesAlgorithm));
+            break;
+
+          /* case 'djikstra':
+            if (djikstraStart) setSolution(calculateDijkstra(nodesAlgorithm, edgesAlgorithm, djikstraStart));
+            break; */
+
+          case 'Ford Fulkerson':
+            if (ff.end && ff.start) {
+              setFFResult(fordFulkerson(new Graph(nodesAlgorithm, edgesAlgorithm), ff.end, ff.start));
+            }
+            break;
+
+          default:
+            break;
+        }
+      } else {
+        setHasErrors(true)
+      }
+    } catch (error) {
+      console.log(error);
+      console.log('error');
+    }
+  }
+
   return (
     <div className="dndflow" style={{height: '100%', width: '100%'}}>
       <ButtonGroup options={options} selected={selected} setSelected={setSelected} />
@@ -145,12 +156,18 @@ const DnDFlow = () => {
           </ReactFlow>
         </div>
         <Sidebar
-          isDjikstra={options[selected].algorithm === 'djikstra'}
-          djikstraStart={djikstraStart}
-          setDjikstraStart={setDjikstraStart}
+          onSolutionClick={onClickSolution}
+          setHasErrors={setHasErrors}
+          hasErrors={hasErrors}
+          selected={options[selected].algorithm}
+          ff={ff}
+          setFf={setFf}
+          /* djikstraStart={djikstraStart}
+          setDjikstraStart={setDjikstraStart} */
           nodes={nodes}
           setNodes={setNodes}
           setEdges={setEdges}
+          setSolution={setSolution}
         />
       </ReactFlowProvider>
     </div>

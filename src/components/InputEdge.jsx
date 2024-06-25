@@ -1,7 +1,6 @@
 import React from 'react'
 
 const InputEdge = ({left, top}) => {
-  console.log(left, top);
   return (
     <div style={{
         position: 'absolute',

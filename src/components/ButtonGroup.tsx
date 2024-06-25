@@ -11,7 +11,7 @@ const ButtonGroup = ({options, selected, setSelected}) => {
       padding: '.3em',
       borderRadius: '4px',
       fontFamily: 'monospace',
-      maxWidth: '250px',
+      maxWidth: '350px',
       width: '100%',
       left: 'calc(50% - 125px)',
       marginTop: '1em'
