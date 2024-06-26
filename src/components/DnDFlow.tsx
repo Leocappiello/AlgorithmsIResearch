@@ -21,6 +21,7 @@ import Graph from '../algorithm/Graph.class.ts';
 import calculateKruskal from '../algorithm/Kruskal.class.ts';
 import calculatePrim from '../algorithm/Prim.class.js';
 import './index.css';
+import calculateDijkstra from '../algorithm/Djikstra.ts';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -40,7 +41,7 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  /* const [djikstraStart, setDjikstraStart] = useState(0); */
+  const [djikstraStart, setDjikstraStart] = useState(0);
 
   const [ff, setFf] = useState({
     start: null,
@@ -111,9 +112,9 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
             setSolution(calculateKruskal(nodesAlgorithm, edgesAlgorithm));
             break;
 
-          /* case 'djikstra':
+          case 'djikstra':
             if (djikstraStart) setSolution(calculateDijkstra(nodesAlgorithm, edgesAlgorithm, djikstraStart));
-            break; */
+            break;
 
           case 'Ford Fulkerson':
             if (ff.end && ff.start) {
@@ -162,8 +163,8 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
           selected={options[selected].algorithm}
           ff={ff}
           setFf={setFf}
-          /* djikstraStart={djikstraStart}
-          setDjikstraStart={setDjikstraStart} */
+          djikstraStart={djikstraStart}
+          setDjikstraStart={setDjikstraStart}
           nodes={nodes}
           setNodes={setNodes}
           setEdges={setEdges}

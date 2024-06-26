@@ -1,5 +1,5 @@
 
-const Sidebar = ({onSolutionClick, selected, ff, setFf, /* djikstraStart, setDjikstraStart, */ setNodes, setEdges, nodes, setSolution, hasErrors, setHasErrors}) => {
+const Sidebar = ({onSolutionClick, selected, ff, setFf, djikstraStart, setDjikstraStart, setNodes, setEdges, nodes, setSolution, hasErrors, setHasErrors}) => {
   const onDragStart = (event: any, nodeType: any) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -12,12 +12,12 @@ const Sidebar = ({onSolutionClick, selected, ff, setFf, /* djikstraStart, setDji
     setHasErrors(false)
   }
 
-  /* const changeDjikstraStart = (e) => {
+  const changeDjikstraStart = (e) => {
     console.log(e.target.value);
     console.log(typeof e.target.value);
     const value = parseInt(e.target.value)
     if (!isNaN(value)) { setDjikstraStart(e.target.value) }
-  } */
+  }
 
     const changeFFStart = (e) => {
       setFf({ ...ff, start: "dndnode_" + e.target.value });
@@ -41,7 +41,7 @@ const Sidebar = ({onSolutionClick, selected, ff, setFf, /* djikstraStart, setDji
         Clear canvas
       </div>
 
-      {/* {selected === 'djikstra' &&
+      {selected === 'djikstra' &&
       <>
         <h3 style={{textAlign: 'center', color: '#282828', borderTop: '1px solid gray', paddingTop: '1em'}}>Inicio del Djikstra</h3>
         <input
@@ -72,10 +72,10 @@ const Sidebar = ({onSolutionClick, selected, ff, setFf, /* djikstraStart, setDji
         ''
         }
       </>
-      } */}
+      }
       {selected === 'Ford Fulkerson' &&
         <>
-          <h3 style={{textAlign: 'center', color: '#282828', borderTop: '1px solid gray', paddingTop: '1em'}}>Inicio del Ford Fulkerson</h3>
+          <h3 style={{textAlign: 'center', color: '#282828', borderTop: '1px solid gray', paddingTop: '1em'}}>Nodo de inicio</h3>
           <input
             placeholder={nodes.length > 0 ? `Ingresa el inicio entre 0 y ${nodes.length}` : 'No hay nodos, agrega uno'}
             className="dndnode output"
@@ -83,7 +83,7 @@ const Sidebar = ({onSolutionClick, selected, ff, setFf, /* djikstraStart, setDji
             onChange={changeFFStart}
             type="number"
           />
-          <h3 style={{textAlign: 'center', color: '#282828'}}>Fin del Ford Fulkerson</h3>
+          <h3 style={{textAlign: 'center', color: '#282828'}}>Nodo de fin</h3>
           <input
             placeholder={nodes.length > 0 ? `Ingresa el inicio entre 0 y ${nodes.length-1}` : 'No hay nodos, agrega uno'}
             className="dndnode output"

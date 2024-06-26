@@ -7,40 +7,43 @@ function transformData(solution) {
   const edges = [];
 
   // Crear nodos únicos
-  const nodeSet = new Set();
-  solution.forEach(({ start, end }) => {
-      nodeSet.add(start);
-      nodeSet.add(end);
-  });
+  if (solution) {
+    const nodeSet = new Set();
+    solution.forEach(({ start, end }) => {
+        nodeSet.add(start);
+        nodeSet.add(end);
+    });
 
-  // Asignar posiciones a los nodos
-  let xPos = 0;
-  let yPos = 0;
-  let increment = -100;
-  let incrementX = -100;
-  nodeSet.forEach((node, index) => {
-      nodes.push({
-          id: node.replace('dndnode_', ''),
-          type: index === 0 ? 'input' : 'custom',
-          data: { label: `${node.replace('dndnode_', '')}` },
-          position: { x: xPos, y: yPos }
-      });
-      xPos += incrementX;
-      yPos += increment;
-  });
+    // Asignar posiciones a los nodos
+    let xPos = 0;
+    let yPos = 0;
+    let increment = -100;
+    let incrementX = -100;
+    nodeSet.forEach((node, index) => {
+        nodes.push({
+            id: node.replace('dndnode_', ''),
+            type: index === 0 ? 'input' : 'custom',
+            data: { label: `${node.replace('dndnode_', '')}` },
+            position: { x: xPos, y: yPos }
+        });
+        xPos += incrementX;
+        yPos += increment;
+    });
 
-  // Crear edges
-  solution.forEach(({ start, end, weight }) => {
-      edges.push({
-          id: `e${start.replace('dndnode_', '')}-${end.replace('dndnode_', '')}`,
-          source: start.replace('dndnode_', ''),
-          target: end.replace('dndnode_', ''),
-          data: { label: weight },
-          type: 'custom'
-      });
-  });
+    // Crear edges
+    solution.forEach(({ start, end, weight }) => {
+        edges.push({
+            id: `e${start.replace('dndnode_', '')}-${end.replace('dndnode_', '')}`,
+            source: start.replace('dndnode_', ''),
+            target: end.replace('dndnode_', ''),
+            data: { label: weight },
+            type: 'custom'
+        });
+    });
 
-  return { nodes, edges };
+    return { nodes, edges };
+  }
+  return null;
 }
 
 const App = () => {
@@ -56,9 +59,9 @@ const App = () => {
     {
       algorithm: 'kruskal',
     },
-    /* {
+    {
       algorithm: 'djikstra',
-    }, */
+    },
     {
       algorithm: 'Ford Fulkerson'
     }
@@ -75,7 +78,7 @@ const App = () => {
         options={options}
         setFFResult={setFFResult}
       />
-      <Solution ffResult={ffResult} selected={options[selected].algorithm} solution={solution && options[selected].algorithm !== 'Ford Fulkerson' ? transformData(solution) : []} /* reactFlowWrapper={reactFlowWrapper} *//>
+      <Solution ffResult={ffResult} selected={options[selected].algorithm} solution={solution && options[selected].algorithm !== 'Ford Fulkerson' || solution &&  options[selected].algorithm !== 'djikstra'  ? transformData(solution) : []} /* reactFlowWrapper={reactFlowWrapper} *//>
     </div>
   )
 }
