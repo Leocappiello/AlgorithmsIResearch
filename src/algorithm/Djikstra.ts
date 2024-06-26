@@ -1,18 +1,20 @@
-export default function calculateDijkstra(nodes, edges, startNode) {
+export default function calculateDijkstra(nodes, edges, startNode, endNode) {
   const distances = {};
+  const previousNodes = {};
   const visited = new Set();
   const priorityQueue = [];
-  const pathEdges = [];
 
   // Inicializa todas las distancias como infinito
   nodes.forEach(node => {
     distances[node] = Infinity;
+    previousNodes[node] = null;
   });
 
-  // Verifica si el nodo inicial está en el formato esperado
+  // Verifica si el nodo inicial y final están en el formato esperado
   const formattedStartNode = nodes.find(node => node.includes(startNode));
-  if (!formattedStartNode) {
-    console.error('Nodo inicial no encontrado en la lista de nodos');
+  const formattedEndNode = nodes.find(node => node.includes(endNode));
+  if (!formattedStartNode || !formattedEndNode) {
+    console.error('Nodo inicial o final no encontrado en la lista de nodos');
     return [];
   }
 
@@ -23,6 +25,9 @@ export default function calculateDijkstra(nodes, edges, startNode) {
   while (priorityQueue.length > 0) {
     priorityQueue.sort((a, b) => a.distance - b.distance);
     const { node: currentNode, distance: currentDistance } = priorityQueue.shift();
+
+    // Si se ha alcanzado el nodo final, se puede detener el algoritmo
+    if (currentNode === formattedEndNode) break;
 
     if (!visited.has(currentNode)) {
       visited.add(currentNode);
@@ -36,12 +41,39 @@ export default function calculateDijkstra(nodes, edges, startNode) {
 
           if (newDistance < distances[neighbor]) {
             distances[neighbor] = newDistance;
+            previousNodes[neighbor] = currentNode;
             priorityQueue.push({ node: neighbor, distance: newDistance });
-            pathEdges.push({ start: currentNode, end: neighbor, weight: parseInt(weight, 10) });
           }
         }
       }
     }
   }
-  return pathEdges;
+
+  // Construye la ruta más corta desde el nodo inicial al nodo final
+  const shortestPath = [];
+  let currentNode = formattedEndNode;
+  while (currentNode && currentNode !== formattedStartNode) {
+    const previousNode = previousNodes[currentNode];
+    if (previousNode) {
+      const edge = edges.find(e => 
+        (e.start === previousNode && e.end === currentNode) ||
+        (e.start === currentNode && e.end === previousNode)
+      );
+      if (edge) {
+        shortestPath.unshift({
+          start: previousNode,
+          end: currentNode,
+          weight: edge.weight
+        });
+      }
+    }
+    currentNode = previousNode;
+  }
+
+  if (!shortestPath.length) {
+    console.error('No se encontró una ruta válida entre los nodos especificados');
+    return [];
+  }
+
+  return shortestPath;
 }

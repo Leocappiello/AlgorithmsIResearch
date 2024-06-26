@@ -42,6 +42,7 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [djikstraStart, setDjikstraStart] = useState(0);
+  const [djikstraEnd, setDjikstraEnd] = useState(0);
 
   const [ff, setFf] = useState({
     start: null,
@@ -113,7 +114,7 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
             break;
 
           case 'djikstra':
-            if (djikstraStart) setSolution(calculateDijkstra(nodesAlgorithm, edgesAlgorithm, djikstraStart));
+            if (djikstraStart && djikstraEnd) setSolution(calculateDijkstra(nodesAlgorithm, edgesAlgorithm, djikstraStart, djikstraEnd));
             break;
 
           case 'Ford Fulkerson':
@@ -165,6 +166,8 @@ const DnDFlow = ({solution, setSolution, reactFlowWrapper, selected,  setSelecte
           setFf={setFf}
           djikstraStart={djikstraStart}
           setDjikstraStart={setDjikstraStart}
+          djikstraEnd={djikstraEnd}
+          setDjikstraEnd={setDjikstraEnd}
           nodes={nodes}
           setNodes={setNodes}
           setEdges={setEdges}
